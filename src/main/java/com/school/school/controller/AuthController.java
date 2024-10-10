@@ -33,49 +33,12 @@ public class AuthController {
     @Autowired 
     private UserService userService;
 
-    // @Autowired AuthenticationManager authenticationManager;
-
-    // @PostMapping("/authenticate")
-    // public AuthenticationResponse createToken(@RequestBody AuthenticationRequest request) {
-    //     log.info("createToken(-)");
-
-    //     try {
-    //         authenticationManager.authenticate(
-    //             new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-    //         );
-
-    //         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-    //         String jwtToken = jwtUtil.generateToken(userDetails.getUsername());
-
-    //         return new AuthenticationResponse(jwtToken);
-
-    //     } catch (BadCredentialsException ex) {
-    //         // throw new BadCredentialsException("Invalid username or password");
-    //         return new AuthenticationResponse("Wrong Credentials");
-    //     }
-    // }
-
-    // @PostMapping("/authenticate")
-    // public ResponseEntity<AuthenticationResponse> createToken(@RequestBody AuthenticationRequest request) {
-    //     log.info("createToken(-)");
-    //     // Authenticate the user
-    //     // userDetailsService.loadUserByUsername(request.getUsername());
-    //     userDetailsService.authenticate(request.getUsername(), request.getPassword());
-
-    //     // Generate the token
-    //     String jwtToken = jwtUtil.generateToken(request.getUsername());
-
-    //     // return new AuthenticationResponse(jwtToken);
-    //     return ResponseEntity.ok(new AuthenticationResponse(jwtToken));
-    // }
-
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> createToken(@RequestBody AuthenticationRequest request) {
         log.info("createToken(-)");
 
         try {
             // Authenticate the user
-        // userDetailsService.loadUserByUsername(request.getUsername());
         boolean auth = userService.authenticate(request.getUsername(), request.getPassword());
 
         // block if auth failed
