@@ -22,11 +22,12 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    public String generateToken(String username, Role role) {
+    public String generateToken(String username, Long id, Role role) {
         log.info("generateToken(-)");
 
         return Jwts.builder()
                 .claim("role", role) // Include role in token
+                .claim("id", id)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))

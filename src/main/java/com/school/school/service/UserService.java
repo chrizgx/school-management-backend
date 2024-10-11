@@ -45,8 +45,9 @@ public class UserService {
         Optional<User> user = userRepository.findByEmail(email);
 
         if (user.isPresent()) {
+            Long id = user.get().getId();
             Role role = user.get().getRole();
-            return jwtUtil.generateToken(email, role);
+            return jwtUtil.generateToken(email, id, role);
         }
 
         return null;
