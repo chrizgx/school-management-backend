@@ -1,17 +1,17 @@
 package com.school.school.security;
 
 
-// import com.javacodeex.service.CustomUserDetailsService;
 import com.school.school.service.CustomUserDetailsService;
-// import com.javacodeex.utility.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component; // Add this
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Slf4j
 @Component // Add this annotation
@@ -41,11 +42,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
+        Integer id = null;
+        String role = null;
         String jwtToken = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
             username = jwtUtil.extractUsername(jwtToken);
+            id = (Integer) jwtUtil.extractClaims(jwtToken).get("id");
+            role = (String) jwtUtil.extractClaims(jwtToken).get("role");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -53,8 +58,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(jwtToken, username)) {
                 log.info("validateToken(-)");
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, Collections.singletonList(authority));
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
