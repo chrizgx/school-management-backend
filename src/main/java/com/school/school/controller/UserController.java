@@ -45,12 +45,14 @@ public class UserController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("role") Role role) {
         try {
-            User createdUser = userDetailsService.createUser(user);
+            log.info("POST:/api/user createUser(-)");
+            User createdUser = userService.createUserGuard(user, role);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            log.info("error: " + e);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
     

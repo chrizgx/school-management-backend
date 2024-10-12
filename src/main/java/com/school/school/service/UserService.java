@@ -4,12 +4,12 @@ import com.school.school.entity.Role;
 import com.school.school.entity.User;
 import com.school.school.repository.UserRepository;
 import com.school.school.security.JwtUtil;
+import com.school.school.service.CustomUserDetailsService;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserDetailsService userDetailsService; // Inject the UserDetailsService
+    private CustomUserDetailsService userDetailsService; // Inject the UserDetailsService
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -51,6 +51,14 @@ public class UserService {
         }
 
         return null;
+    }
+
+    public User createUserGuard(User user, Role requestorRole) {
+        if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
+            throw new IllegalArgumentException("Help Desk users cannot create Admin or Help Desk users.");
+        }
+
+        return userDetailsService.createUser(user);
     }
 
     // 
