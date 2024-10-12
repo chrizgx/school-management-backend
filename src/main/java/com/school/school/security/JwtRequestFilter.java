@@ -1,5 +1,6 @@
 package com.school.school.security;
 
+import com.school.school.entity.Role;
 
 import com.school.school.service.CustomUserDetailsService;
 
@@ -43,14 +44,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         Integer id = null;
-        String role = null;
+        Role role = null;
         String jwtToken = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
             username = jwtUtil.extractUsername(jwtToken);
             id = (Integer) jwtUtil.extractClaims(jwtToken).get("id");
-            role = (String) jwtUtil.extractClaims(jwtToken).get("role");
+            role = Role.getFromString((String) jwtUtil.extractClaims(jwtToken).get("role"));
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -64,7 +65,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 request.setAttribute("id", id);
                 request.setAttribute("role", role);
 
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.toString());
 
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, Collections.singletonList(authority));
