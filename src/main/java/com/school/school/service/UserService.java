@@ -70,19 +70,19 @@ public class UserService {
 
         // Authentication Logic starts here
         // Admin can edit everyone's profile and ALL attributes
-        if (requestorRole == Role.ADMIN) return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getRole(), user.isEnabled());
+        if (requestorRole == Role.ADMIN) return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), user.getRole(), user.isEnabled());
 
         // Help desk can edit all role's profile except Admin's and Help Desks (including themselves)
         // Help desk CANNOT edit user role.
         if (requestorRole == Role.HELP_DESK && userToUpdate.getRole() != Role.ADMIN && userToUpdate.getRole() != Role.HELP_DESK)
-            return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), null, user.isEnabled());
+            return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), null, user.isEnabled());
 
         log.info("updateUserGuard(- ID# " + requestorId + " illegally tried to update profile ID#" + user.getId());
         return null;
 
     }
 
-    public User updateUser(Long id, String firstName, String lastName, String email, Role role, Boolean enabled) {
+    public User updateUser(Long id, String firstName, String lastName, String email, String password, Role role, Boolean enabled) {
         Optional<User> existingUser = userRepository.findById(id);
 
         if (!existingUser.isPresent()) return null;
@@ -92,6 +92,7 @@ public class UserService {
         if (firstName != null) user.setFirstName(firstName);
         if (lastName != null) user.setLastName(lastName);
         if (email != null) user.setEmail(email);
+        if (password != null) user.setPassword(password);
         if (role != null) user.setRole(role);
         if (enabled != null) user.setEnabled(enabled);
 
