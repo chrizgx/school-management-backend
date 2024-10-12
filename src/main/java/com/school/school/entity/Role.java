@@ -15,4 +15,13 @@ public enum Role {
     public String toString() {
         return displayName;
     }
+
+    public static Role getFromString(String roleString) {
+        for (Role role : Role.values()) {
+            if (role.displayName.equalsIgnoreCase(roleString)) {
+                return role;
+            }
+        }
+        throw new IllegalArgumentException("No role found for string: " + roleString);
+    }
 }
