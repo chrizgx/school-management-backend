@@ -58,6 +58,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(jwtToken, username)) {
                 log.info("validateToken(-)");
+
+                // Set attributes for easy access inside API paths
+                request.setAttribute("username", username);
+                request.setAttribute("id", id);
+                request.setAttribute("role", role);
+
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
 
                 UsernamePasswordAuthenticationToken authenticationToken =
