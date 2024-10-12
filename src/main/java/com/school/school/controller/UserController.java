@@ -2,15 +2,15 @@ package com.school.school.controller;
 
 import com.school.school.entity.User;
 import com.school.school.service.CustomUserDetailsService;
+import org.springframework.security.access.prepost.PreAuthorize; 
 
-import jakarta.annotation.security.RolesAllowed;
+// import jakarta.annotation.security.RolesAllowed;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.RequestBody; 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +25,9 @@ public class UserController {
     private CustomUserDetailsService userService;
 
     @GetMapping
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') hasRole('HELP_DESK')")
     public Iterable<User> getMethodName() {
+
         return userService.getAllUsers();
     }
     
