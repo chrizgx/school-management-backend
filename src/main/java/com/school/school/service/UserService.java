@@ -98,4 +98,25 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    // Expected Results:
+    // NULL: There is no user with this id
+    // TRUE: Deleted
+    // FALSE: ACTION NOT ALLOWED
+    public Boolean deleteUserGuard(Integer id, Integer requestorId, Role requestorRole) {
+        log.info("UserService.deleteUserGuard(" + id + ")");
+        Optional<User>  existingUser = userRepository.findById(id);
+        // Null check
+        if (!existingUser.isPresent() || id == null) return null;
+
+        User user = existingUser.get();
+
+        // Authority Check
+        if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK )) return false;
+        if (id == requestorId) return false;
+
+        userRepository.deleteById(id.longValue());
+
+        return true;
+    }
 }
