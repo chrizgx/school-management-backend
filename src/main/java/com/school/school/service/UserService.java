@@ -99,6 +99,39 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Expected Results
+    // NULL: There is no user with this id
+    // TRUE: Updated
+    // FALSE: Password Authentication Failed
+    public Boolean updatePasswordGuard(Long id, String password, String newPassword) {
+        // Block null results
+        Optional<User> existingUser = userRepository.findById(id);
+        if (!existingUser.isPresent()) return null;
+
+        User user = existingUser.get();
+
+        // Authenticate
+        if (user.getPassword() != password) return false;
+
+        // Perform action
+        return updatePassword(id, newPassword);
+    }
+
+    // Expected Results
+    // NULL: There is no user with this id
+    // TRUE: Updated
+    public Boolean updatePassword(Long id, String password) {
+        Optional<User> existingUser = userRepository.findById(id);
+        if (!existingUser.isPresent()) return null;
+        
+        User user = existingUser.get();
+
+        user.setPassword(password);
+        userRepository.save(user);
+
+        return true;
+    }
+
     // Expected Results:
     // NULL: There is no user with this id
     // TRUE: Deleted
