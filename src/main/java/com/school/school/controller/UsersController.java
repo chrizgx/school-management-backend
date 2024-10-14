@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UsersController {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
@@ -74,6 +74,25 @@ public class UserController {
         } catch (Exception e) {
             log.info("Error: " + e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{id}/password")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
+    public ResponseEntity<Void> updatePassword(@PathVariable("id") Integer id, @RequestBody String password, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
+        try {
+            log.info("PUT:/api/users/" + id + "/password updatePassword(-)");
+
+            Boolean updated = userService.updatePasswordGuard(id, password, requestorId, requestorRole);
+
+            if (updated == true) return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            
+            return ResponseEntity.notFound().build();
+            
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
