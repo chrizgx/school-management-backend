@@ -145,7 +145,7 @@ public class UserService {
         User user = existingUser.get();
 
         // Authenticate
-        if (user.getPassword() != password) return false;
+        if (user.getPassword().equals(password) == false) return false;
 
         // Perform action
         return updatePassword(id, newPassword);
