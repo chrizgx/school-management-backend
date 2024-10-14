@@ -35,6 +35,7 @@ public class ProfileController {
     @GetMapping
     public ResponseEntity<User> getProfile(@RequestAttribute("id") Integer id) {
         try {
+            log.info("GET:/api/profile" + "getProfile(-)");
             User user = userService.getUser(id);
             
             if (user == null) return ResponseEntity.notFound().build();
