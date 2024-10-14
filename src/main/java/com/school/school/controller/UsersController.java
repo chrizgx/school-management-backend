@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
@@ -48,7 +48,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
     public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("role") Role role) {
         try {
-            log.info("POST:/api/user createUser(-)");
+            log.info("POST:/api/users createUser(-)");
             User createdUser = userService.createUserGuard(user, role);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -62,7 +62,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
     public ResponseEntity<User> updateUser(@PathVariable("id") Integer id, @RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
         try {
-            log.info("PUT:/api/user/" + id + "(-)");
+            log.info("PUT:/api/users" + id + "(-)");
             // Role requestorRole = Role.getFromString(requestorRoleString);
             User updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
 
@@ -81,7 +81,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
         try {
-            log.info("DEL:/api/user/" + id + "(-)");
+            log.info("DEL:/api/users" + id + "(-)");
 
             Boolean deleted = userService.deleteUserGuard(id, requestorId, requestorRole);
 
