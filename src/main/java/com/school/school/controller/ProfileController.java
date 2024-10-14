@@ -48,10 +48,11 @@ public class ProfileController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestBody String password, @RequestBody String newPassword, @RequestAttribute("id") Integer id) {
+    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordRequest body, @RequestAttribute("id") Integer id) {
         try {
             log.info("PUT:/api/profile/password updatePassword(-)");
-            Boolean updated = userService.updatePasswordGuard(id, password, newPassword);
+            if (body.password == null || body.newPassword == null) return ResponseEntity.badRequest().build();
+            Boolean updated = userService.updatePasswordGuard(id, body.password, body.newPassword);
 
             if (updated == true) return ResponseEntity.accepted().build();
             if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -61,6 +62,11 @@ public class ProfileController {
             log.info("Error: " + e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    public static class UpdatePasswordRequest {
+        public String password;
+        public String newPassword;
     }
     
     
