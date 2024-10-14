@@ -53,6 +53,19 @@ public class UserService {
         return null;
     }
 
+    public User getUser(Integer id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if (!optionalUser.isPresent()) return null;
+
+        User user = optionalUser.get();
+
+        // Hide sensitive info
+        user.setPassword(null);
+
+        return user;
+    }
+
     public User createUserGuard(User user, Role requestorRole) {
         if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
             throw new IllegalArgumentException("Help Desk users cannot create Admin or Help Desk users.");
