@@ -99,11 +99,32 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // Method restricted for password recovery by ADMIN and HELP_DESK users
+    // Expected Results
+    // NULL: There is no user with this id
+    // TRUE: Updated
+    // FALSE: ACTION NOT ALLOWED
+    public Boolean updatePasswordGuard(Integer id, String newPassword, Integer requestorId, Role requestorRole) {
+        // Block null results
+        Optional<User> existingUser = userRepository.findById(id);
+        if (!existingUser.isPresent()) return null;
+
+        User user = existingUser.get();
+
+        // Authenticate
+        if (user.getRole() != Role.ADMIN && user.getRole() != Role.HELP_DESK) return false; // Double check
+        if (requestorRole == Role.HELP_DESK && user.getRole() == Role.ADMIN) return false; // Block HELP DESK editing ADMIN
+        if (requestorRole == Role.HELP_DESK && user.getRole() == Role.HELP_DESK) return false; // Block HELP DESK editing other HELP DESK
+
+        // Perform Action
+        return updatePassword(id, newPassword);
+    }
+
     // Expected Results
     // NULL: There is no user with this id
     // TRUE: Updated
     // FALSE: Password Authentication Failed
-    public Boolean updatePasswordGuard(Long id, String password, String newPassword) {
+    public Boolean updatePasswordGuard(Integer id, String password, String newPassword) {
         // Block null results
         Optional<User> existingUser = userRepository.findById(id);
         if (!existingUser.isPresent()) return null;
@@ -120,7 +141,7 @@ public class UserService {
     // Expected Results
     // NULL: There is no user with this id
     // TRUE: Updated
-    public Boolean updatePassword(Long id, String password) {
+    public Boolean updatePassword(Integer id, String password) {
         Optional<User> existingUser = userRepository.findById(id);
         if (!existingUser.isPresent()) return null;
         
