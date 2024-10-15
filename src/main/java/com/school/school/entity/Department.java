@@ -7,8 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "DEPARTMENTS")
@@ -24,5 +29,8 @@ public class Department {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @ManyToMany(mappedBy = "departments")
+    private List<User> users;
 
 }

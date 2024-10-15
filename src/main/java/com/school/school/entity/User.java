@@ -7,10 +7,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name="USERS")
@@ -40,13 +46,13 @@ public class User {
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
 
-    // public String getEmail() {
-    //     return this.email;
-    // }
-
-    // public String getPassword() {
-    //     return this.password;
-    // }
+    @ManyToMany
+    @JoinTable(
+        name = "USERS_DEPARTMENTS",
+        joinColumns = @JoinColumn(name = "USER_ID"),
+        inverseJoinColumns = @JoinColumn(name = "DEPARTMENT_ID")
+    )
+    private List<Department> departments;
 
     // public boolean isEnabled() {
     //     return this.enabled;
