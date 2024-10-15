@@ -30,6 +30,9 @@ public class Department {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "ENABLED", nullable = false)
+    private boolean enabled;
+
     @ManyToMany(mappedBy = "departments")
     private List<User> users;
 
