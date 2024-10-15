@@ -60,5 +60,19 @@ public class DepartmentsController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> createDepartment(@RequestBody Department newDepartment, @RequestAttribute("role") Role requestorRole) {
+        try {
+            Department department = departmentService.create(newDepartment);
+
+            if (department == null) return ResponseEntity.badRequest().build();
+            return new ResponseEntity<>(department, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
 }

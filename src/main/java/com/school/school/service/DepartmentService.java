@@ -37,5 +37,9 @@ public class DepartmentService {
 
         return department.get();
     }
+
+    public Department create(Department newDepartment) {
+        return departmentRepository.save(newDepartment);
+    }
     
 }
