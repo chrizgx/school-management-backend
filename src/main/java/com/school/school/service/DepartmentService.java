@@ -27,10 +27,13 @@ public class DepartmentService {
         return departments;
     }
 
-    public Department findById(Integer id) {
+    public Department findById(Integer id, Role requestorRole) {
         Optional<Department> department = departmentRepository.findById(id);
 
         if (!department.isPresent()) return null;
+
+        // Privacy check
+        if (requestorRole == Role.STUDENT) department.get().setUsers(null);
 
         return department.get();
     }
