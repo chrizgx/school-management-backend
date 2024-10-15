@@ -41,5 +41,17 @@ public class DepartmentService {
     public Department create(Department newDepartment) {
         return departmentRepository.save(newDepartment);
     }
+
+    public Department update(Integer id, Department updatedDepartment) {
+        Optional<Department> existingDepartment = departmentRepository.findById(id);
+
+        if (existingDepartment.isPresent() == false) return null;
+        Department department = existingDepartment.get();
+
+        if (updatedDepartment.getName() != null) department.setName(updatedDepartment.getName());
+        if (updatedDepartment.getDescription() != null) department.setDescription(updatedDepartment.getDescription());
+
+        return departmentRepository.save(department);
+    }
     
 }

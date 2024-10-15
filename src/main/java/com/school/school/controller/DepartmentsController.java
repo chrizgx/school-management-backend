@@ -74,5 +74,19 @@ public class DepartmentsController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> updateDepartment(@PathVariable Integer id, @RequestBody Department updatedDepartment) {
+        try {
+            Department department = departmentService.update(id, updatedDepartment);
+            
+            if (department == null) return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
 }
