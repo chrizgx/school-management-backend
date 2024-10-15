@@ -47,5 +47,18 @@ public class DepartmentsController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Department> getDepartmentById(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+        try {
+            Department department = departmentService.findById(id, requestorRole);
+            if (department == null) return ResponseEntity.notFound().build();
+
+            return new ResponseEntity<>(department, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
 }
