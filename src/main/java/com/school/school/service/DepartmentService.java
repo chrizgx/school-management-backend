@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class DepartmentService {
@@ -19,5 +21,18 @@ public class DepartmentService {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+
+    public Iterable<Department> findAll() {
+        Iterable<Department> departments = departmentRepository.findAll();
+        return departments;
+    }
+
+    public Department findById(Integer id) {
+        Optional<Department> department = departmentRepository.findById(id);
+
+        if (!department.isPresent()) return null;
+
+        return department.get();
+    }
     
 }
