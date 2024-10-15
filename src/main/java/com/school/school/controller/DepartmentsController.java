@@ -2,6 +2,8 @@ package com.school.school.controller;
 
 import com.school.school.entity.User;
 import com.school.school.entity.Role;
+import com.school.school.entity.Department;
+import com.school.school.repository.DepartmentRepository;
 import com.school.school.service.DepartmentService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,5 +32,20 @@ public class DepartmentsController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @GetMapping
+    public ResponseEntity<Iterable<Department>> getDepartments() {
+        try {
+            Iterable<Department> departments = departmentRepository.findAll();
+
+            return new ResponseEntity<>(departments, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
 }
