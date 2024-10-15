@@ -43,6 +43,20 @@ public class UsersController {
 
         return userDetailsService.getAllUsers();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") Integer id) {
+        try {
+            User user = userService.getUser(id);
+
+            if (user == null) return ResponseEntity.notFound().build();
+
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
