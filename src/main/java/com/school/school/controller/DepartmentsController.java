@@ -88,5 +88,37 @@ public class DepartmentsController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PutMapping("/{id}/enable")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> enable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+        return updateDepartmentStatus(id, true, requestorRole);
+    }
+
+    @PutMapping("/{id}/disable")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> disable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+        return updateDepartmentStatus(id, false, requestorRole);
+    }
+
+
+    private ResponseEntity<Department> updateDepartmentStatus(Integer id, boolean enable, Role requestorRole) {
+        try {
+            Department department;
+            Boolean updated;
+            
+            updated = departmentService.setEnabled(id, enable);
+            if (updated == null) return ResponseEntity.notFound().build();
+            if (updated == false) return ResponseEntity.badRequest().build();
+            
+            department = departmentService.findById(id, requestorRole);
+            return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            log.info("Error: " + e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     
+
 }
