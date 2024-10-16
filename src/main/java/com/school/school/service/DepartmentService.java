@@ -53,5 +53,21 @@ public class DepartmentService {
 
         return departmentRepository.save(department);
     }
+
+    // Expected Result
+    // NULL: Not department found with id given
+    // FALSE: Cannot enable/disable since dept. is already enabled/disabled
+    // TRUE: Operation completed
+    public Boolean setEnabled(Integer id, boolean value) {
+        Optional<Department> existingDepartment = departmentRepository.findById(id);
+        if (existingDepartment.isPresent() == false) return null;
+        Department department = existingDepartment.get();
+
+        if (department.isEnabled() == value) return false;
+
+        department.setEnabled(value);
+        departmentRepository.save(department);
+        return true;
+    }
     
 }
