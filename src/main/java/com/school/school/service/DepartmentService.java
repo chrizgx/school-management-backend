@@ -70,4 +70,26 @@ public class DepartmentService {
         return true;
     }
     
+    // Expected Results
+    // NULL: No user or department found with the id given
+    // TRUE: Action completed successfully
+    // FALSE: Not allowed, usually when the userId given corresponds to a non-student profile role
+    public Boolean enrollStudent(Integer departmentId, Integer userId) {
+        Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (departmentOptional.isEmpty()) return null;
+        if (userOptional.isEmpty()) return null;
+        if (userOptional.get().getRole() != Role.STUDENT) return false;
+
+        Department department = departmentOptional.get();
+        User user = userOptional.get();
+
+        // Enroll user to department
+        department.getUsers().add(user);
+        departmentRepository.save(department);
+
+        return true;
+    }
+
 }
