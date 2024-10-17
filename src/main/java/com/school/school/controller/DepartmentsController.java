@@ -5,6 +5,7 @@ import com.school.school.entity.Role;
 import com.school.school.entity.Department;
 import com.school.school.repository.DepartmentRepository;
 import com.school.school.service.DepartmentService;
+import com.school.school.exception.UserAlreadyEnrolledException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,12 +122,15 @@ public class DepartmentsController {
 
     @PostMapping("/{id}/student/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<Void> enrollStudent(@PathVariable("id") Integer departmentId, @PathVariable("userId") Integer userId) {
+    public ResponseEntity<String> enrollStudent(@PathVariable("id") Integer departmentId, @PathVariable("userId") Integer userId) {
         try {
             Boolean enroll = departmentService.enrollStudent(departmentId, userId);
             if (enroll) return ResponseEntity.ok().build();
             
             return ResponseEntity.badRequest().build();
+        } catch (UserAlreadyEnrolledException e) {
+            log.info("Error: " + e);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (Exception e) {
             log.info("Erro: " + e);
             return ResponseEntity.internalServerError().build();

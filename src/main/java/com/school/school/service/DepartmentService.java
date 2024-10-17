@@ -5,6 +5,7 @@ import com.school.school.repository.UserRepository;
 import com.school.school.entity.Role;
 import com.school.school.entity.User;
 import com.school.school.entity.Department;
+import com.school.school.exception.UserAlreadyEnrolledException;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class DepartmentService {
     // FALSE: Not allowed, usually when the userId given corresponds to a non-student profile role
     public Boolean enrollStudent(Integer departmentId, Integer userId) {
         Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> userOptional = userRepository.findById((Long) userId.longValue());
 
         if (departmentOptional.isEmpty()) return null;
         if (userOptional.isEmpty()) return null;
@@ -84,6 +85,10 @@ public class DepartmentService {
 
         Department department = departmentOptional.get();
         User user = userOptional.get();
+
+        if (department.getUsers().contains(user)) {
+            throw new UserAlreadyEnrolledException("User with ID " + userId + " is already enrolled in Department with ID " + departmentId + " (\"" + department.getName() + "\")");
+        }
 
         // Enroll user to department
         department.getUsers().add(user);
