@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 import jakarta.persistence.ManyToMany;
@@ -33,7 +34,12 @@ public class Department {
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
 
-    @ManyToMany(mappedBy = "departments")
+    @ManyToMany
+    @JoinTable(
+        name = "DEPARTMENTS_USERS",
+        joinColumns = @JoinColumn(name = "DEPARTMENT_ID"),
+        inverseJoinColumns = @JoinColumn(name = "USER_ID")
+    )
     private List<User> users;
 
 }

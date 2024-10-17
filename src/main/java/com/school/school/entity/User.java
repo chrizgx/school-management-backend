@@ -7,11 +7,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.JoinTable;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,12 +44,7 @@ public class User {
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
 
-    @ManyToMany
-    @JoinTable(
-        name = "USERS_DEPARTMENTS",
-        joinColumns = @JoinColumn(name = "USER_ID"),
-        inverseJoinColumns = @JoinColumn(name = "DEPARTMENT_ID")
-    )
+    @ManyToMany(mappedBy = "users")
     private List<Department> departments;
 
     // public boolean isEnabled() {
