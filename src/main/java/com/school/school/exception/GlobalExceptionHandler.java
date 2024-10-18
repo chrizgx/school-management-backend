@@ -21,4 +21,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
+
+    @ExceptionHandler(UnauthorizedRoleActionException.class)
+    public ResponseEntity<ResponseWrapper<Object>> handleUnauthorizedRoleActionException(UnauthorizedRoleActionException e) {
+        log.error("IMPORTANT: Global error handler caught: ", e);
+
+        // Standard response
+        ResponseWrapper<Object> errorResponse = new ResponseWrapper<>(e.getMessage(), false);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
 }
