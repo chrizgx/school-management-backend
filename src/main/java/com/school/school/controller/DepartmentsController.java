@@ -101,7 +101,7 @@ public class DepartmentsController {
             Boolean enroll = departmentService.enrollStudent(departmentId, userId);
             if (enroll) return ResponseEntity.ok(new ResponseWrapper<>("User ID#" + userId + " successfully enrolled to Department ID#" + departmentId, true));
             
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseWrapper<>("User is either not a student or does not exist.", false))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseWrapper<>("User is either not a student or does not exist.", false));
         } catch (UserAlreadyEnrolledException e) {
             log.info("Error: " + e);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseWrapper<>("User ID#" + userId + " is already enrolled to Department ID#" + departmentId, false));
