@@ -34,34 +34,23 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<User> getProfile(@RequestAttribute("id") Integer id) {
-        try {
-            log.info("GET:/api/profile" + "getProfile(-)");
-            User user = userService.getUser(id);
-            
-            if (user == null) return ResponseEntity.notFound().build();
-            return new ResponseEntity<>(user, HttpStatus.OK);
-
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        log.info("GET:/api/profile" + "getProfile(-)");
+        User user = userService.getUser(id);
+        
+        if (user == null) return ResponseEntity.notFound().build();
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping("/password")
     public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordRequest body, @RequestAttribute("id") Integer id) {
-        try {
-            log.info("PUT:/api/profile/password updatePassword(-)");
-            if (body.password == null || body.newPassword == null) return ResponseEntity.badRequest().build();
-            Boolean updated = userService.updatePasswordGuard(id, body.password, body.newPassword);
+        log.info("PUT:/api/profile/password updatePassword(-)");
+        if (body.password == null || body.newPassword == null) return ResponseEntity.badRequest().build();
+        Boolean updated = userService.updatePasswordGuard(id, body.password, body.newPassword);
 
-            if (updated == true) return ResponseEntity.accepted().build();
-            if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (updated == true) return ResponseEntity.accepted().build();
+        if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.notFound().build();
     }
 
     public static class UpdatePasswordRequest {
