@@ -5,6 +5,7 @@ import com.school.school.entity.User;
 import com.school.school.repository.UserRepository;
 import com.school.school.security.JwtUtil;
 import com.school.school.service.CustomUserDetailsService;
+import com.school.school.exception.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,7 +69,7 @@ public class UserService {
 
     public User createUserGuard(User user, Role requestorRole) {
         if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
-            throw new IllegalArgumentException("Help Desk users cannot create Admin or Help Desk users.");
+            throw new UnauthorizedRoleActionException("Help Desk users can only create teacher and student accounts.");
         }
 
         return userDetailsService.createUser(user);
@@ -92,7 +93,6 @@ public class UserService {
 
         log.info("updateUserGuard(- ID# " + requestorId + " illegally tried to update profile ID#" + user.getId());
         return null;
-
     }
 
     public User updateUser(Long id, String firstName, String lastName, String email, String password, Role role, Boolean enabled) {
