@@ -89,11 +89,12 @@ public class UserService {
 
         // Help desk can edit all role's profile except Admin's and Help Desks (including themselves)
         // Help desk CANNOT edit user role.
-        if (requestorRole == Role.HELP_DESK && userToUpdate.getRole() != Role.ADMIN && userToUpdate.getRole() != Role.HELP_DESK)
-            return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), null, user.isEnabled());
-
-        log.info("updateUserGuard(- ID# " + requestorId + " illegally tried to update profile ID#" + user.getId());
-        return null;
+        if (requestorRole == Role.HELP_DESK && (userToUpdate.getRole() == Role.ADMIN || userToUpdate.getRole() == Role.HELP_DESK) ) {
+            log.info("updateUserGuard(- ID# " + requestorId + " illegally tried to update profile ID#" + user.getId());
+            throw new UnauthorizedRoleActionException("You have no permission to update ID#" + id);
+        }
+        
+        return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), null, user.isEnabled());
     }
 
     public User updateUser(Long id, String firstName, String lastName, String email, String password, Role role, Boolean enabled) {
