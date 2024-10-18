@@ -39,55 +39,34 @@ public class DepartmentsController {
 
     @GetMapping
     public ResponseEntity<Iterable<Department>> getDepartments() {
-        try {
-            Iterable<Department> departments = departmentRepository.findAll();
-
-            return new ResponseEntity<>(departments, HttpStatus.OK);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        Iterable<Department> departments = departmentRepository.findAll();
+        return new ResponseEntity<>(departments, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Department> getDepartmentById(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
-        try {
-            Department department = departmentService.findById(id, requestorRole);
-            if (department == null) return ResponseEntity.notFound().build();
+        Department department = departmentService.findById(id, requestorRole);
+        if (department == null) return ResponseEntity.notFound().build();
 
-            return new ResponseEntity<>(department, HttpStatus.OK);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Department> createDepartment(@RequestBody Department newDepartment, @RequestAttribute("role") Role requestorRole) {
-        try {
-            Department department = departmentService.create(newDepartment);
+        Department department = departmentService.create(newDepartment);
 
-            if (department == null) return ResponseEntity.badRequest().build();
-            return new ResponseEntity<>(department, HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        if (department == null) return ResponseEntity.badRequest().build();
+        return new ResponseEntity<>(department, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Department> updateDepartment(@PathVariable Integer id, @RequestBody Department updatedDepartment) {
-        try {
-            Department department = departmentService.update(id, updatedDepartment);
-            
-            if (department == null) return ResponseEntity.notFound().build();
-            return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        Department department = departmentService.update(id, updatedDepartment);
+        
+        if (department == null) return ResponseEntity.notFound().build();
+        return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
     }
 
     @PutMapping("/{id}/enable")
@@ -104,20 +83,15 @@ public class DepartmentsController {
 
 
     private ResponseEntity<Department> updateDepartmentStatus(Integer id, boolean enable, Role requestorRole) {
-        try {
-            Department department;
-            Boolean updated;
-            
-            updated = departmentService.setEnabled(id, enable);
-            if (updated == null) return ResponseEntity.notFound().build();
-            if (updated == false) return ResponseEntity.badRequest().build();
-            
-            department = departmentService.findById(id, requestorRole);
-            return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        Department department;
+        Boolean updated;
+        
+        updated = departmentService.setEnabled(id, enable);
+        if (updated == null) return ResponseEntity.notFound().build();
+        if (updated == false) return ResponseEntity.badRequest().build();
+        
+        department = departmentService.findById(id, requestorRole);
+        return new ResponseEntity<>(department, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/{id}/student/{userId}")
@@ -131,9 +105,6 @@ public class DepartmentsController {
         } catch (UserAlreadyEnrolledException e) {
             log.info("Error: " + e);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (Exception e) {
-            log.info("Erro: " + e);
-            return ResponseEntity.internalServerError().build();
         }
     }
 
