@@ -1,6 +1,7 @@
 package com.school.school.controller;
 
 import com.school.school.entity.User;
+import com.school.school.response.*;
 import com.school.school.entity.Role;
 import com.school.school.service.CustomUserDetailsService;
 import com.school.school.service.UserService;
@@ -33,22 +34,22 @@ public class ProfileController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<User> getProfile(@RequestAttribute("id") Integer id) {
+    public ResponseEntity<ResponseWrapper<User>> getProfile(@RequestAttribute("id") Integer id) {
         log.info("GET:/api/profile" + "getProfile(-)");
         User user = userService.getUser(id);
         
-        if (user == null) return ResponseEntity.notFound().build();
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));
+        else return ResponseEntity.ok(new ResponseWrapper<>(user, true));
     }
 
     @PutMapping("/password")
-    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordRequest body, @RequestAttribute("id") Integer id) {
+    public ResponseEntity<ResponseWrapper<Void>> updatePassword(@RequestBody UpdatePasswordRequest body, @RequestAttribute("id") Integer id) {
         log.info("PUT:/api/profile/password updatePassword(-)");
         if (body.password == null || body.newPassword == null) return ResponseEntity.badRequest().build();
         Boolean updated = userService.updatePasswordGuard(id, body.password, body.newPassword);
 
-        if (updated == true) return ResponseEntity.accepted().build();
-        if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (updated == true) return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ResponseWrapper<>("Password updated", true));
+        if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseWrapper<>("Authentication failed", false));
 
         return ResponseEntity.notFound().build();
     }
