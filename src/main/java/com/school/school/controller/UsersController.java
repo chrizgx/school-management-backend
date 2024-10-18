@@ -70,7 +70,7 @@ public class UsersController {
         User updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
 
         if (updatedUser != null) return ResponseEntity.ok(new ResponseWrapper<>(updatedUser, true));
-        else return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseWrapper<>("User with ID " + id + " does not exist, or you don't have permission to edit them.", false));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));
     }
 
     @PutMapping("/{id}/password")
