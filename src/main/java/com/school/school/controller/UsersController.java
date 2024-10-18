@@ -55,9 +55,9 @@ public class UsersController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("role") Role role) {
+    public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
         log.info("POST:/api/users createUser(-)");
-        User createdUser = userService.createUserGuard(user, role);
+        User createdUser = userService.createUserGuard(user, requestorId, role);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
     

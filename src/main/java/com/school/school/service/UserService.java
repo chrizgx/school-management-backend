@@ -67,8 +67,9 @@ public class UserService {
         return user;
     }
 
-    public User createUserGuard(User user, Role requestorRole) {
+    public User createUserGuard(User user, Integer requestorId, Role requestorRole) {
         if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
+            log.info("createUserGuard(- ID# " + requestorId + " illegally tried to create user with " + user.getRole() + " permissions.");
             throw new UnauthorizedRoleActionException("Help Desk users can only create teacher and student accounts.");
         }
 
