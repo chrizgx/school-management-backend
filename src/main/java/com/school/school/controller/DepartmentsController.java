@@ -4,6 +4,7 @@ import com.school.school.entity.User;
 import com.school.school.entity.Role;
 import com.school.school.entity.Department;
 import com.school.school.repository.DepartmentRepository;
+import com.school.school.response.NotFoundWrapper;
 import com.school.school.response.ResponseWrapper;
 import com.school.school.service.DepartmentService;
 import com.school.school.exception.UserAlreadyEnrolledException;
@@ -65,7 +66,7 @@ public class DepartmentsController {
     public ResponseEntity<ResponseWrapper<Department>> updateDepartment(@PathVariable Integer id, @RequestBody Department updatedDepartment) {
         Department department = departmentService.update(id, updatedDepartment);
         
-        if (department == null) return ResponseEntity.notFound().build();
+        if (department == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("department", id));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ResponseWrapper<>(department, true));
     }
 
@@ -87,8 +88,8 @@ public class DepartmentsController {
         Boolean updated;
         
         updated = departmentService.setEnabled(id, enable);
-        if (updated == null) return ResponseEntity.notFound().build();
-        if (updated == false) return ResponseEntity.badRequest().build();
+        if (updated == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("department", id));
+        if (updated == false) return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseWrapper<>("Department ID#" + id + " is already " + (enable ? "enabled" : "disabled"), false));
         
         department = departmentService.findById(id, requestorRole);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ResponseWrapper<>(department, true));
