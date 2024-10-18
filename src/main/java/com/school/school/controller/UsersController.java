@@ -5,6 +5,8 @@ import com.school.school.entity.Role;
 import com.school.school.service.CustomUserDetailsService;
 import com.school.school.service.UserService;
 
+import com.school.school.response.*;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.access.prepost.PreAuthorize; 
@@ -45,88 +47,54 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") Integer id) {
-        try {
-            User user = userService.getUser(id);
-
-            if (user == null) return ResponseEntity.notFound().build();
-
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<ResponseWrapper<User>> getUser(@PathVariable("id") Integer id) {
+        User user = userService.getUser(id);
+        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseWrapper<>("User with ID " + id + "does not exist.", false));
+        return ResponseEntity.ok(new ResponseWrapper<>(user, true));
     }
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
     public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("role") Role role) {
-        try {
-            log.info("POST:/api/users createUser(-)");
-            User createdUser = userService.createUserGuard(user, role);
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            log.info("error: " + e);
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        log.info("POST:/api/users createUser(-)");
+        User createdUser = userService.createUserGuard(user, role);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
     
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Integer id, @RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
-        try {
-            log.info("PUT:/api/users" + id + "(-)");
-            // Role requestorRole = Role.getFromString(requestorRoleString);
-            User updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
+    public ResponseEntity<ResponseWrapper<User>> updateUser(@PathVariable("id") Integer id, @RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
+        log.info("PUT:/api/users" + id + "(-)");
+        // Role requestorRole = Role.getFromString(requestorRoleString);
+        User updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
 
-            if (updatedUser != null) {
-                return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        if (updatedUser != null) return ResponseEntity.ok(new ResponseWrapper<>(updatedUser, true));
+        else return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseWrapper<>("User with ID " + id + " does not exist, or you don't have permission to edit them.", false));
     }
 
     @PutMapping("/{id}/password")
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<Void> updatePassword(@PathVariable("id") Integer id, @RequestBody String password, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
-        try {
-            log.info("PUT:/api/users/" + id + "/password updatePassword(-)");
+    public ResponseEntity<ResponseWrapper<Void>> updatePassword(@PathVariable("id") Integer id, @RequestBody String password, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
+        log.info("PUT:/api/users/" + id + "/password updatePassword(-)");
 
-            Boolean updated = userService.updatePasswordGuard(id, password, requestorId, requestorRole);
+        Boolean updated = userService.updatePasswordGuard(id, password, requestorId, requestorRole);
 
-            if (updated == true) return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-            if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            
-            return ResponseEntity.notFound().build();
-            
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        if (updated == true) return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ResponseWrapper<>("User " + id + " password updated successfully", true));
+        if (updated == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseWrapper<>("HELP_DESK users can not update the password of other 'ADMIN' or 'HELP_DESK' accounts", false));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
-        try {
-            log.info("DEL:/api/users" + id + "(-)");
+    public ResponseEntity<ResponseWrapper<Void>> deleteUser(@PathVariable("id") Integer id, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
+        log.info("DEL:/api/users" + id + "(-)");
 
-            Boolean deleted = userService.deleteUserGuard(id, requestorId, requestorRole);
+        Boolean deleted = userService.deleteUserGuard(id, requestorId, requestorRole);
 
-            if (deleted == null) return ResponseEntity.notFound().build();
-            if (deleted == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            if (deleted == true) return ResponseEntity.noContent().build();
-
-            throw new Exception("'Deleted' value is not null, false or true");
-        } catch (Exception e) {
-            log.info("Error: " + e);
-            return ResponseEntity.internalServerError().build();
-        }
+        if (deleted == true) return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ResponseWrapper<>("User #" + id + " deleted successfully", true));
+        if (deleted == false) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseWrapper<>("'HELP_DESK' users can not delete other 'HELP_DESK' or 'ADMIN' users. No user can delete their own account.", false));
+        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));
     }
     
 }
