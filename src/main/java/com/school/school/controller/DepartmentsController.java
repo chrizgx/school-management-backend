@@ -2,6 +2,7 @@ package com.school.school.controller;
 
 import com.school.school.entity.User;
 import com.school.school.entity.Role;
+import com.school.school.dto.department.DepartmentDTO;
 import com.school.school.entity.Department;
 import com.school.school.repository.DepartmentRepository;
 import com.school.school.response.NotFoundWrapper;
@@ -40,8 +41,8 @@ public class DepartmentsController {
     private DepartmentRepository departmentRepository;
 
     @GetMapping
-    public ResponseEntity<ResponseWrapper<Iterable<Department>>> getDepartments() {
-        Iterable<Department> departments = departmentRepository.findAll();
+    public ResponseEntity<ResponseWrapper<Iterable<DepartmentDTO>>> getDepartments() {
+        Iterable<DepartmentDTO> departments = departmentService.findAll();
         return ResponseEntity.ok(new ResponseWrapper<>(departments, true));
     }
 

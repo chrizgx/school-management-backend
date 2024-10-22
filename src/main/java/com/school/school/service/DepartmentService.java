@@ -4,8 +4,11 @@ import com.school.school.repository.DepartmentRepository;
 import com.school.school.repository.UserRepository;
 import com.school.school.entity.Role;
 import com.school.school.entity.User;
+import com.school.school.dto.department.DepartmentDTO;
 import com.school.school.entity.Department;
 import com.school.school.exception.UserAlreadyEnrolledException;
+import com.school.school.mapper.DepartmentMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,13 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    public Iterable<Department> findAll() {
-        Iterable<Department> departments = departmentRepository.findAll();
-        return departments;
+    @Autowired
+    DepartmentMapper departmentMapper;
+
+    public Iterable<DepartmentDTO> findAll() {
+        return departmentRepository.findAll().stream()
+        .map(departmentMapper::toDepartmentDTO)
+        .toList();
     }
 
     public Department findById(Integer id, Role requestorRole) {
