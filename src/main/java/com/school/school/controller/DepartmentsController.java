@@ -55,8 +55,8 @@ public class DepartmentsController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseWrapper<Department>> createDepartment(@RequestBody Department newDepartment, @RequestAttribute("role") Role requestorRole) {
-        Department department = departmentService.create(newDepartment);
+    public ResponseEntity<ResponseWrapper<DepartmentDTO>> createDepartment(@RequestBody Department newDepartment, @RequestAttribute("role") Role requestorRole) {
+        DepartmentDTO department = departmentService.create(newDepartment);
 
         if (department == null) return ResponseEntity.badRequest().build();
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseWrapper<>(department, true));
@@ -64,8 +64,8 @@ public class DepartmentsController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseWrapper<Department>> updateDepartment(@PathVariable Integer id, @RequestBody Department updatedDepartment) {
-        Department department = departmentService.update(id, updatedDepartment);
+    public ResponseEntity<ResponseWrapper<DepartmentDTO>> updateDepartment(@PathVariable Integer id, @RequestBody Department updatedDepartment) {
+        DepartmentDTO department = departmentService.update(id, updatedDepartment);
         
         if (department == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("department", id));
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new ResponseWrapper<>(department, true));

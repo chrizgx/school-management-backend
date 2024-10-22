@@ -46,11 +46,12 @@ public class DepartmentService {
         return departmentMapper.toDepartmentDTO(department.get());
     }
 
-    public Department create(Department newDepartment) {
-        return departmentRepository.save(newDepartment);
+    public DepartmentDTO create(Department newDepartment) {
+        Department department = departmentRepository.save(newDepartment);
+        return departmentMapper.toDepartmentDTO(department);
     }
 
-    public Department update(Integer id, Department updatedDepartment) {
+    public DepartmentDTO update(Integer id, Department updatedDepartment) {
         Optional<Department> existingDepartment = departmentRepository.findById(id);
 
         if (existingDepartment.isPresent() == false) return null;
@@ -59,7 +60,7 @@ public class DepartmentService {
         if (updatedDepartment.getName() != null) department.setName(updatedDepartment.getName());
         if (updatedDepartment.getDescription() != null) department.setDescription(updatedDepartment.getDescription());
 
-        return departmentRepository.save(department);
+        return departmentMapper.toDepartmentDTO(departmentRepository.save(department));
     }
 
     // Expected Result
