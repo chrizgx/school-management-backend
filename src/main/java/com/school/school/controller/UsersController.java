@@ -1,6 +1,7 @@
 package com.school.school.controller;
 
 import com.school.school.entity.User;
+import com.school.school.dto.user.UserDTO;
 import com.school.school.entity.Role;
 import com.school.school.service.CustomUserDetailsService;
 import com.school.school.service.UserService;
@@ -47,17 +48,17 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseWrapper<User>> getUser(@PathVariable("id") Integer id) {
-        User user = userService.getUser(id);
+    public ResponseEntity<ResponseWrapper<UserDTO>> getUser(@PathVariable("id") Integer id) {
+        UserDTO user = userService.getUser(id);
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseWrapper<>("User with ID " + id + "does not exist.", false));
         return ResponseEntity.ok(new ResponseWrapper<>(user, true));
     }
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<User> createUser(@RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
         log.info("POST:/api/users createUser(-)");
-        User createdUser = userService.createUserGuard(user, requestorId, role);
+        UserDTO createdUser = userService.createUserGuard(user, requestorId, role);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
     

@@ -2,6 +2,7 @@ package com.school.school.controller;
 
 import com.school.school.entity.User;
 import com.school.school.response.*;
+import com.school.school.dto.user.UserDTO;
 import com.school.school.entity.Role;
 import com.school.school.service.CustomUserDetailsService;
 import com.school.school.service.UserService;
@@ -34,9 +35,9 @@ public class ProfileController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<ResponseWrapper<User>> getProfile(@RequestAttribute("id") Integer id) {
+    public ResponseEntity<ResponseWrapper<UserDTO>> getProfile(@RequestAttribute("id") Integer id) {
         log.info("GET:/api/profile" + "getProfile(-)");
-        User user = userService.getUser(id);
+        UserDTO user = userService.getUser(id);
         
         if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));
         else return ResponseEntity.ok(new ResponseWrapper<>(user, true));

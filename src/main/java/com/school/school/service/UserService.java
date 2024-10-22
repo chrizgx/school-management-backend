@@ -2,10 +2,12 @@ package com.school.school.service;
 
 import com.school.school.entity.Role;
 import com.school.school.entity.User;
+import com.school.school.dto.user.*;
 import com.school.school.repository.UserRepository;
 import com.school.school.security.JwtUtil;
 import com.school.school.service.CustomUserDetailsService;
 import com.school.school.exception.*;
+import com.school.school.mapper.UserMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +25,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private CustomUserDetailsService userDetailsService; // Inject the UserDetailsService
@@ -54,26 +59,24 @@ public class UserService {
         return null;
     }
 
-    public User getUser(Integer id) {
+    public UserDTO getUser(Integer id) {
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (!optionalUser.isPresent()) return null;
 
         User user = optionalUser.get();
 
-        // Hide sensitive info
-        user.setPassword(null);
-
-        return user;
+        return userMapper.toUserDTO(user);
     }
 
-    public User createUserGuard(User user, Integer requestorId, Role requestorRole) {
+    public UserDTO createUserGuard(User user, Integer requestorId, Role requestorRole) {
         if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
             log.info("createUserGuard(- ID# " + requestorId + " illegally tried to create user with " + user.getRole() + " permissions.");
             throw new UnauthorizedRoleActionException("Help Desk users can only create teacher and student accounts.");
         }
 
-        return userDetailsService.createUser(user);
+        User newUser = userDetailsService.createUser(user);
+        return userMapper.toUserDTO(newUser);
     }
 
     // 
