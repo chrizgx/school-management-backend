@@ -47,8 +47,8 @@ public class DepartmentsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseWrapper<Department>> getDepartmentById(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
-        Department department = departmentService.findById(id, requestorRole);
+    public ResponseEntity<ResponseWrapper<DepartmentDTO>> getDepartmentById(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+        DepartmentDTO department = departmentService.findById(id, requestorRole);
         if (department == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(new ResponseWrapper<>(department, true));
     }
@@ -73,19 +73,19 @@ public class DepartmentsController {
 
     @PutMapping("/{id}/enable")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseWrapper<Department>> enable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+    public ResponseEntity<ResponseWrapper<DepartmentDTO>> enable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
         return updateDepartmentStatus(id, true, requestorRole);
     }
 
     @PutMapping("/{id}/disable")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ResponseWrapper<Department>> disable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
+    public ResponseEntity<ResponseWrapper<DepartmentDTO>> disable(@PathVariable("id") Integer id, @RequestAttribute("role") Role requestorRole) {
         return updateDepartmentStatus(id, false, requestorRole);
     }
 
 
-    private ResponseEntity<ResponseWrapper<Department>> updateDepartmentStatus(Integer id, boolean enable, Role requestorRole) {
-        Department department;
+    private ResponseEntity<ResponseWrapper<DepartmentDTO>> updateDepartmentStatus(Integer id, boolean enable, Role requestorRole) {
+        DepartmentDTO department;
         Boolean updated;
         
         updated = departmentService.setEnabled(id, enable);

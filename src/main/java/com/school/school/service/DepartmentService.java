@@ -35,7 +35,7 @@ public class DepartmentService {
         .toList();
     }
 
-    public Department findById(Integer id, Role requestorRole) {
+    public DepartmentDTO findById(Integer id, Role requestorRole) {
         Optional<Department> department = departmentRepository.findById(id);
 
         if (!department.isPresent()) return null;
@@ -43,7 +43,7 @@ public class DepartmentService {
         // Privacy check
         if (requestorRole == Role.STUDENT) department.get().setUsers(null);
 
-        return department.get();
+        return departmentMapper.toDepartmentDTO(department.get());
     }
 
     public Department create(Department newDepartment) {
