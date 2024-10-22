@@ -65,10 +65,10 @@ public class UsersController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<ResponseWrapper<User>> updateUser(@PathVariable("id") Integer id, @RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
+    public ResponseEntity<ResponseWrapper<UserDTO>> updateUser(@PathVariable("id") Integer id, @RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role requestorRole) {
         log.info("PUT:/api/users" + id + "(-)");
         // Role requestorRole = Role.getFromString(requestorRoleString);
-        User updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
+        UserDTO updatedUser = userService.updateUserGuard(id, user, requestorId, requestorRole);
 
         if (updatedUser != null) return ResponseEntity.ok(new ResponseWrapper<>(updatedUser, true));
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NotFoundWrapper<>("user", id));

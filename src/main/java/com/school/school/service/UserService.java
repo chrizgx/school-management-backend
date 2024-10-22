@@ -80,7 +80,7 @@ public class UserService {
     }
 
     // 
-    public User updateUserGuard(Integer id, User user, Integer requestorId, Role requestorRole) {
+    public UserDTO updateUserGuard(Integer id, User user, Integer requestorId, Role requestorRole) {
         Optional<User> existingUser = userRepository.findById(id);
 
         if (!existingUser.isPresent()) return null;
@@ -100,7 +100,7 @@ public class UserService {
         return updateUser(userToUpdate.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(), null, user.isEnabled());
     }
 
-    public User updateUser(Long id, String firstName, String lastName, String email, String password, Role role, Boolean enabled) {
+    public UserDTO updateUser(Long id, String firstName, String lastName, String email, String password, Role role, Boolean enabled) {
         Optional<User> existingUser = userRepository.findById(id);
 
         if (!existingUser.isPresent()) return null;
@@ -114,7 +114,8 @@ public class UserService {
         if (role != null) user.setRole(role);
         if (enabled != null) user.setEnabled(enabled);
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toUserDTO(updatedUser);
     }
 
     // Method restricted for password recovery by ADMIN and HELP_DESK users
