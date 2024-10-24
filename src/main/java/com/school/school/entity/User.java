@@ -22,6 +22,8 @@ import java.util.List;
 @Setter
 public class User {
 
+    public User() {}
+
     public User(String firstName, String lastName, String email, String password, Role role, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
