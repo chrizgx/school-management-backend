@@ -11,12 +11,14 @@ import com.school.school.response.*;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.security.access.prepost.PreAuthorize; 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 
 // import jakarta.annotation.security.RolesAllowed;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -30,6 +32,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -58,8 +63,17 @@ public class UsersController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<ResponseWrapper<UserDTO>> createUser(@RequestBody CreateUserDTO user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
+    public ResponseEntity<ResponseWrapper<UserDTO>> createUser(@Validated @RequestBody CreateUserDTO user, BindingResult bindingResult, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
         log.info("POST:/api/users createUser(-)");
+
+        if (bindingResult.hasErrors()) {
+            // Collect and return validation error messages
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+            return ResponseEntity.badRequest().body(new ResponseWrapper<>(errorMessages.toString(), false));
+        }
+
         UserDTO createdUser = userService.createUserGuard(user, requestorId, role);
         if (createdUser == null) return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseWrapper<>(user.getEmail() + " already exists.", false));
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper<>(createdUser, true));
