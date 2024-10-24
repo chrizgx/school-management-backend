@@ -77,6 +77,11 @@ public class UserService {
             throw new UnauthorizedRoleActionException("Help Desk users can only create teacher and student accounts.");
         }
 
+        if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
+            log.info("createUserGuard(- ID#" + requestorId + " tried to create user with email " + newUser.getEmail());
+            return null;
+        }
+
 
         newUser = userDetailsService.createUser(newUser);
         return userMapper.toUserDTO(newUser);
