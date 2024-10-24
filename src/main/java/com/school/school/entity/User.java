@@ -21,6 +21,16 @@ import java.util.List;
 @Getter
 @Setter
 public class User {
+
+    public User(String firstName, String lastName, String email, String password, Role role, boolean enabled) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.enabled = enabled;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
