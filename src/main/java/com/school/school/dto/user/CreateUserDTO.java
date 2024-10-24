@@ -3,11 +3,16 @@ package com.school.school.dto.user;
 import com.school.school.entity.Role;
 import com.school.school.security.annotations.Sanitize;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import lombok.Getter;
+
+@Getter
+// @Valid
 public class CreateUserDTO {
 
     @Sanitize
