@@ -1,6 +1,7 @@
 package com.school.school.controller;
 
 import com.school.school.entity.User;
+import com.school.school.dto.user.CreateUserDTO;
 import com.school.school.dto.user.UserDTO;
 import com.school.school.entity.Role;
 import com.school.school.service.CustomUserDetailsService;
@@ -11,6 +12,7 @@ import com.school.school.response.*;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.access.prepost.PreAuthorize; 
+import org.springframework.validation.annotation.Validated;
 
 // import jakarta.annotation.security.RolesAllowed;
 
@@ -56,7 +58,7 @@ public class UsersController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<UserDTO> createUser(@RequestBody User user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
         log.info("POST:/api/users createUser(-)");
         UserDTO createdUser = userService.createUserGuard(user, requestorId, role);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);

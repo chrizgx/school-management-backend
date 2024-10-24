@@ -69,13 +69,16 @@ public class UserService {
         return userMapper.toUserDTO(user);
     }
 
-    public UserDTO createUserGuard(User user, Integer requestorId, Role requestorRole) {
-        if (requestorRole == Role.HELP_DESK && ( user.getRole() == Role.ADMIN || user.getRole() == Role.HELP_DESK ) ) {
-            log.info("createUserGuard(- ID# " + requestorId + " illegally tried to create user with " + user.getRole() + " permissions.");
+    public UserDTO createUserGuard(CreateUserDTO userDTO, Integer requestorId, Role requestorRole) {
+        User newUser = userMapper.toUser(userDTO);
+
+        if (requestorRole == Role.HELP_DESK && ( newUser.getRole() == Role.ADMIN || newUser.getRole() == Role.HELP_DESK ) ) {
+            log.info("createUserGuard(- ID# " + requestorId + " illegally tried to create user with " + newUser.getRole() + " permissions.");
             throw new UnauthorizedRoleActionException("Help Desk users can only create teacher and student accounts.");
         }
 
-        User newUser = userDetailsService.createUser(user);
+
+        newUser = userDetailsService.createUser(newUser);
         return userMapper.toUserDTO(newUser);
     }
 
