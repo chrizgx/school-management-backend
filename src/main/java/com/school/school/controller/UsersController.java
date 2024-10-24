@@ -58,10 +58,11 @@ public class UsersController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('HELP_DESK')")
-    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
+    public ResponseEntity<ResponseWrapper<UserDTO>> createUser(@RequestBody CreateUserDTO user, @RequestAttribute("id") Integer requestorId, @RequestAttribute("role") Role role) {
         log.info("POST:/api/users createUser(-)");
         UserDTO createdUser = userService.createUserGuard(user, requestorId, role);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        if (createdUser == null) return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseWrapper<>(user.getEmail() + " already exists.", false));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseWrapper<>(createdUser, true));
     }
     
 
